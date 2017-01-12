@@ -88,6 +88,10 @@ LOCAL_REQUIRED_MODULES := ubiupdatevol
 inc :=
 inc_dep_file :=
 
+ifeq ($(ADV_SELECT_FS_DEVICE),true)
+LOCAL_CFLAGS += -DADV_SELECT_FS_DEVICE
+endif
+
 LOCAL_MODULE := updater
 
 LOCAL_FORCE_STATIC_EXECUTABLE := true

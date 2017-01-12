@@ -137,6 +137,20 @@ Value* MountFn(const char* name, State* state, int argc, Expr* argv[]) {
     if (strlen(location) == 0) {
         ErrorAbort(state, "location argument to %s() can't be empty", name);
         goto done;
+        printf("original mount location : %s\n", location);
+#ifdef ADV_SELECT_FS_DEVICE
+    } else {
+        char fs[PROPERTY_VALUE_MAX];
+    	
+        property_get("ro.fs", fs, "");
+
+        //mmcblk1 -> mmcblk0
+        if (!strncmp(fs, "emmc", 4)) {
+            location[17]='0';
+        }
+
+        printf("modified mount location : %s\n", location);
+#endif
     }
     if (strlen(mount_point) == 0) {
         ErrorAbort(state, "mount_point argument to %s() can't be empty", name);
@@ -344,7 +358,21 @@ Value* FormatFn(const char* name, State* state, int argc, Expr* argv[]) {
         result = location;
 #ifdef USE_EXT4
     } else if (strcmp(fs_type, "ext4") == 0) {
-        int status = make_ext4fs(location, atoll(fs_size), mount_point, sehandle);
+        int status;
+
+        printf("original format location : %s\n", location);
+#ifdef ADV_SELECT_FS_DEVICE
+        char fs[PROPERTY_VALUE_MAX];
+    	
+        property_get("ro.fs", fs, "");
+
+        //mmcblk1 -> mmcblk0
+        if (!strncmp(fs, "emmc", 4)) {
+            location[17]='0';
+        }
+        printf("fs = %s, modified format location : %s\n", fs, location);
+#endif        
+        status = make_ext4fs(location, atoll(fs_size), mount_point, sehandle);
         if (status != 0) {
             printf("%s: make_ext4fs failed (%d) on %s",
                     name, status, location);
@@ -545,6 +573,23 @@ Value* PackageExtractFileFn(const char* name, State* state,
         char* zip_path;
         char* dest_path;
         if (ReadArgs(state, argv, 2, &zip_path, &dest_path) < 0) return NULL;
+
+
+        printf("original destination_path = %s\n", dest_path);
+#ifdef ADV_SELECT_FS_DEVICE
+    {
+        char fs[PROPERTY_VALUE_MAX];
+
+        property_get("ro.fs", fs, "");
+
+        //mmcblk1 -> mmcblk0 
+        if (!strncmp(fs, "emmc", 4)) {
+    	    dest_path[17]='0';
+        }
+        
+        printf("modified destination_path = %s\n", dest_path);
+    }
+#endif
 
         const ZipEntry* entry = mzFindZipEntry(za, zip_path);
         if (entry == NULL) {
