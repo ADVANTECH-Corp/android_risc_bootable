@@ -34,6 +34,7 @@
 #include "roots.h"
 #include "common.h"
 #include "make_ext4fs.h"
+#include "cutils/properties.h"
 extern "C" {
 #include "wipe.h"
 #include "cryptfs.h"
@@ -93,8 +94,20 @@ void load_volume_table()
 {
     int i;
     int ret;
+    char fs_type[PROP_VALUE_MAX];
 
+#ifdef ADV_SELECT_FS_DEVICE
+    if (property_get("ro.fs", fs_type, "")) {
+        if (!strncmp(fs_type,"emmc",4))
+            fstab = fs_mgr_read_fstab("/etc/recovery_emmc.fstab");
+        else if(!strncmp(fs_type,"sata",4))
+            fstab = fs_mgr_read_fstab("/etc/recovery_sata.fstab");
+        else
+            fstab = fs_mgr_read_fstab("/etc/recovery.fstab");  
+    }
+#else
     fstab = fs_mgr_read_fstab("/etc/recovery.fstab");
+#endif
     if (!fstab) {
         LOGE("failed to read /etc/recovery.fstab\n");
         return;

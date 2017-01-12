@@ -111,6 +111,10 @@ else
   LOCAL_STATIC_LIBRARIES += $(TARGET_RECOVERY_UI_LIB)
 endif
 
+ifeq ($(ADV_SELECT_FS_DEVICE),true)
+LOCAL_CFLAGS += -DADV_SELECT_FS_DEVICE
+endif
+
 include $(BUILD_EXECUTABLE)
 
 # All the APIs for testing
