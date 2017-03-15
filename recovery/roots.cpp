@@ -102,6 +102,8 @@ void load_volume_table()
             fstab = fs_mgr_read_fstab("/etc/recovery_emmc.fstab");
         else if(!strncmp(fs_type,"sata",4))
             fstab = fs_mgr_read_fstab("/etc/recovery_sata.fstab");
+	else if (!strncmp(fs_type,"sd2",3))
+            fstab = fs_mgr_read_fstab("/etc/recovery_sd2.fstab");
         else
             fstab = fs_mgr_read_fstab("/etc/recovery.fstab");  
     }
