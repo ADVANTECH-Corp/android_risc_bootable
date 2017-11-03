@@ -147,8 +147,9 @@ Value* MountFn(const char* name, State* state, int argc, Expr* argv[]) {
         //mmcblk1 -> mmcblk0
         if (!strncmp(fs, "emmc", 4)) {
             location[17]='0';
+        } else if (!strncmp(fs, "sd2", 3)) {
+            location[17]='2';
         }
-
         printf("modified mount location : %s\n", location);
 #endif
     }
@@ -369,6 +370,8 @@ Value* FormatFn(const char* name, State* state, int argc, Expr* argv[]) {
         //mmcblk1 -> mmcblk0
         if (!strncmp(fs, "emmc", 4)) {
             location[17]='0';
+        } else if (!strncmp(fs, "sd2", 3)) {
+            location[17]='2';
         }
         printf("fs = %s, modified format location : %s\n", fs, location);
 #endif        
@@ -585,8 +588,9 @@ Value* PackageExtractFileFn(const char* name, State* state,
         //mmcblk1 -> mmcblk0 
         if (!strncmp(fs, "emmc", 4)) {
     	    dest_path[17]='0';
+        } else if (!strncmp(fs, "sd2", 3)) {
+            dest_path[17]='2';	
         }
-        
         printf("modified destination_path = %s\n", dest_path);
     }
 #endif
